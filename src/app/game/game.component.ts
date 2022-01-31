@@ -26,12 +26,11 @@ export class GameComponent implements OnInit {
   takeCard() {
     if(!this.pickCardAnimation){
     this.currentCard = this.game.stack.pop()!;//take the last card of the array and delete it in the array
-    console.log(this.currentCard);
-    this.pickCardAnimation = true;
-
+    this.pickCardAnimation = true;    
     setTimeout(()=>{
       this.pickCardAnimation = false;
-    },1500)
+      this.game.playedCards.push(this.currentCard);
+    },1000)
     }
   }
 
