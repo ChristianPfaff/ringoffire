@@ -33,6 +33,9 @@ export class GameComponent implements OnInit {
     if(!this.pickCardAnimation){
     this.currentCard = this.game.stack.pop()!;//take the last card of the array and delete it in the array
     this.pickCardAnimation = true;    
+
+    this.game.currentPlayer++;
+    this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
     setTimeout(()=>{
       this.pickCardAnimation = false;
       this.game.playedCards.push(this.currentCard);
