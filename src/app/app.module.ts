@@ -13,15 +13,23 @@ import { DialogAddPlayerComponent } from './dialog-add-player/dialog-add-player.
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { GameInfoComponent } from './game-info/game-info.component';
 import { MatCardModule } from '@angular/material/card';
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from '../environments/environment';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { provideFirestore,getFirestore } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
-    AppComponent,   
+    AppComponent,
     StartScreenComponent,
-    GameComponent, PlayerComponent, DialogAddPlayerComponent, GameInfoComponent
+    GameComponent,
+    PlayerComponent,
+    DialogAddPlayerComponent,
+    GameInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,13 +38,16 @@ import { MatCardModule } from '@angular/material/card';
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    FormsModule,    
+    FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatCardModule
-    
+    MatCardModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
