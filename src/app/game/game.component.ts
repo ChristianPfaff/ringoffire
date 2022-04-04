@@ -12,11 +12,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements OnInit {
-  pickCardAnimation = false;
-  currentCard: string = '';
+ 
   game!: Game;
   name!: string;
   animal!: string;
+  gameId!: string;
   
   constructor(private route: ActivatedRoute, private firestore: AngularFirestore, public dialog: MatDialog) {}
 
@@ -24,12 +24,15 @@ export class GameComponent implements OnInit {
     this.newGame();
     this.route.params.subscribe((params) => {
       console.log(params['id']);
-      this.firestore.collection('games').doc(params['id']).valueChanges().subscribe((game: any)=>{
+      this.gameId = params['id'];
+      this.firestore.collection('games').doc(this.gameId).valueChanges().subscribe((game: any)=>{
       console.log('Game update', game);
       this.game.currentPlayer = game.currentPlayer;
       this.game.playedCards = game.playedCards;
       this.game.players = game.players;  
       this.game.stack = game.stack;
+      this.game.pickCardAnimation = game.pickCardAnimation;
+      this.game.currentCard = game.currentCard;
 
       });
     });
@@ -43,15 +46,18 @@ export class GameComponent implements OnInit {
   }
 
   takeCard() {
-    if(!this.pickCardAnimation){
-    this.currentCard = this.game.stack.pop()!;//take the last card of the array and delete it in the array
-    this.pickCardAnimation = true;    
-
+    if(!this.game.pickCardAnimation){
+    this.game.currentCard = this.game.stack.pop()!;//take the last card of the array and delete it in the array    
+    this.game.pickCardAnimation = true;  
     this.game.currentPlayer++;
     this.game.currentPlayer = this.game.currentPlayer % this.game.players.length;
+
+    this.saveGame(); 
+
     setTimeout(()=>{
-      this.pickCardAnimation = false;
-      this.game.playedCards.push(this.currentCard);
+      this.game.pickCardAnimation = false;
+      this.game.playedCards.push(this.game.currentCard);
+      this.saveGame();
     },1000)
     }
   }
@@ -63,8 +69,13 @@ export class GameComponent implements OnInit {
       console.log('The dialog was closed', name);
       if (name && name.length > 0){
         this.game.players.push(name);
+        this.saveGame();
       }
     });
   }  
+
+  saveGame(){
+    this.firestore.collection('games').doc(this.gameId).update(this.game.toJson());
+  }
  
 }
